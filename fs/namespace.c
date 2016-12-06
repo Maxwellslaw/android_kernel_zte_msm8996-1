@@ -26,6 +26,9 @@
 #include <linux/task_work.h>
 #include "pnode.h"
 #include "internal.h"
+#ifdef CONFIG_UFSD_PROXY_FS
+#include "ufsd/ufsd.h"
+#endif
 
 static unsigned int m_hash_mask __read_mostly;
 static unsigned int m_hash_shift __read_mostly;
@@ -896,6 +899,12 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void 
 
 	if (!type)
 		return ERR_PTR(-ENODEV);
+
+#ifdef CONFIG_UFSD_PROXY_FS
+	/* ufsd will call vfs_kern_mount again with the correct type/data */
+	if (!strcmp(type->name, "ufsd"))
+		return ufsd_vfs_mount(type, flags, name, data);
+#endif
 
 	mnt = alloc_vfsmnt(name);
 	if (!mnt)

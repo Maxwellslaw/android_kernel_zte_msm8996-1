@@ -1,0 +1,21 @@
+config UFSD_PROXY_FS
+	bool "UFSD filesystem mount proxy support"
+	default n
+	help
+	  Say Y here to include support for pretending to be
+	  Paragon's UFSD filesystem driver.
+
+	  This driver will capture mount calls to the ufsd filesystem then
+	  demangle and redirect them to real proper filesystems.
+
+	  I know, it's stupid. UFSD itself is stupider, sorry Paragon.
+	  Yes, stupider is a word in my vocabulary. Only because of you.
+
+config UFSD_PROXY_SELINUX_LABEL
+	string "Default SELinux label for UFSD filesystems"
+	depends on UFSD_PROXY_FS && SECURITY_SELINUX
+	default "u:object_r:vfat:s0"
+	help
+	  Set this to the default SELinux label string for UFSD mounted
+	  filesystems. When no context option is specified in mount options,
+	  this is the context that will be used for the entire filesystem.
