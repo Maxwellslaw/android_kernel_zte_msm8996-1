@@ -619,10 +619,9 @@ static inline void ufshcd_cond_add_cmd_trace(struct ufs_hba *hba,
 	}
 }
 #else
-static inline void ufshcd_cond_add_cmd_trace(struct ufs_hba *hba,
-					unsigned int tag, const char *str)
-{
-}
+#define ufshcd_log_cmd(...) do {} while (0)
+#define ufshcd_cmd_log_print(...) do {} while (0)
+#define ufshcd_cond_add_cmd_trace(...) do {} while (0)
 #endif
 
 static void ufshcd_print_clk_freqs(struct ufs_hba *hba)
@@ -5728,9 +5727,11 @@ static void ufshcd_err_handler(struct work_struct *work)
 			ufshcd_print_pwr_info(hba);
 			ufshcd_print_tmrs(hba, hba->outstanding_tasks);
 
+#ifdef CONFIG_TRACEPOINTS
 			spin_unlock_irqrestore(hba->host->host_lock, flags);
 			ufshcd_cmd_log_print();
 			spin_lock_irqsave(hba->host->host_lock, flags);
+#endif
 	}
 
 	if ((hba->saved_err & INT_FATAL_ERRORS) || hba->saved_ce_err ||
@@ -9381,7 +9382,9 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
 	 */
 	ufshcd_set_ufs_dev_active(hba);
 
+#ifdef CONFIG_TRACEPOINTS
 	ufshcd_log_cmd_init(hba);
+#endif
 	async_schedule(ufshcd_async_scan, hba);
 
 	ufsdbg_add_debugfs(hba);

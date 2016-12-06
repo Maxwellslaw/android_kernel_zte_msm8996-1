@@ -2036,7 +2036,7 @@ static ssize_t transports_init_store(
 }
 
 static struct device_attribute dev_attr_transports_init =
-				__ATTR(transports_init, S_IRUGO | S_IWUSR,
+				__ATTR(transports_init, S_IWUSR,
 				NULL,
 				transports_init_store);
 /*end*/

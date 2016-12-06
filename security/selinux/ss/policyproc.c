@@ -5411,6 +5411,9 @@ static uint32_t pp_name_to_class(policy_db_t *db, const char *name)
 	policy_classes_t *list = (policy_classes_t *)db->symtab_classes.attr_list;
 	uint32_t class = 0;
 
+	if (!name)
+		return 0;
+
 	for (i = 0; i < db->symtab_classes.element_num; ++i) {
 		if (!strcmp(list[i].name, name)) {
 			class = list[i].datums;
@@ -5426,6 +5429,9 @@ static uint32_t pp_name_to_type(policy_db_t *db, const char *name)
 	uint32_t i;
 	policy_types_t *list = (policy_types_t *)db->symtab_types.attr_list;
 	uint32_t type = 0;
+
+	if (!name)
+		return 0;
 
 	for (i = 0; i < db->symtab_types.element_num; ++i) {
 		if (!strcmp(list[i].name, name)) {
@@ -5446,7 +5452,7 @@ static uint32_t pp_name_to_perm(policy_db_t *db, pp_avc_desc_t *desc, const char
 	uint32_t perm = 0;
 	bool found = false;
 
-	if (!pp_find_class(db, desc, &index)) {
+	if (!name || !pp_find_class(db, desc, &index)) {
 		return 0;
 	}
 
@@ -5558,7 +5564,7 @@ static bool pp_match_permissive(policy_db_t *db, pp_perm_desc_t *desc, size_t *i
 			if (map.node_list[i].node_map & (PP_MAPBIT << (j - start_bit))) {
 				name = pp_type_to_name(db, j);
 
-				if (!strcmp(name, desc->sid)) {
+				if (name && !strcmp(name, desc->sid)) {
 					*index = i;
 					rc = true;
 					break;
