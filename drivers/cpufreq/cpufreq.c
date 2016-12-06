@@ -2259,6 +2259,9 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
 			CPUFREQ_NOTIFY, new_policy);
 
+	if (policy->max != new_policy->max)
+		trace_printk(" cpu %u maxfreq %u -> %u kHz", policy->cpu, policy->max, new_policy->max);
+
 	policy->min = new_policy->min;
 	policy->max = new_policy->max;
 
